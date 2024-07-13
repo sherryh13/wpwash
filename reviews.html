@@ -176,10 +176,12 @@
             <p>&copy; 2024 Wayne Power Washing. All rights reserved.</p>
         </footer>
     </div>
-   <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const reviewsList = document.getElementById('reviews-list');
             const reviewForm = document.getElementById('review-form');
+
+            let db;
 
             // Open (or create) the database
             const request = window.indexedDB.open('reviewsDB', 1);
@@ -188,10 +190,10 @@
                 console.error('Database error:', event.target.errorCode);
             };
 
-            // Create the object store
+            // Create or upgrade the database schema
             request.onupgradeneeded = function(event) {
-                const db = event.target.result;
-                const objectStore = db.createObjectStore('reviews', { keyPath: 'id', autoIncrement:true });
+                db = event.target.result;
+                const objectStore = db.createObjectStore('reviews', { keyPath: 'id', autoIncrement: true });
                 objectStore.createIndex('name', 'name', { unique: false });
                 objectStore.createIndex('rating', 'rating', { unique: false });
                 objectStore.createIndex('text', 'text', { unique: false });
@@ -265,7 +267,7 @@
                     };
 
                     if (reviewImage) {
-                        // Handle image upload (if needed)
+                        // Handle image upload if needed
                         // For simplicity, this example does not handle image upload to IndexedDB
                     }
 
@@ -275,7 +277,7 @@
                     // Clear form fields
                     reviewForm.reset();
                 } else {
-                    alert('Please fill out your name, review, and rating.');
+                    alert('Please fill out your name, review, and rate');
                 }
             });
 
