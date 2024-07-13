@@ -143,16 +143,15 @@
                 <a href="sandjoints.html">Paver Brick Sand</a>
                 <a href="guttercleaning.html">Gutter Cleaning</a>
                 <a href="paversealing.html">Paver Sealing</a>
-                <a href="contactus.html">Contact Us</a>
                 <a href="reviews.html">Reviews</a>
             </nav>
         </header>
         <main>
             <div class="review-section">
                 <h2>Leave a Review</h2>
-                <form class="review-form">
-                    <textarea placeholder="Write your review here..."></textarea>
-                    <select>
+                <form class="review-form" id="review-form">
+                    <textarea id="review-text" placeholder="Write your review here..."></textarea>
+                    <select id="review-rating">
                         <option value="" disabled selected>Rate us</option>
                         <option value="1">1 Star</option>
                         <option value="2">2 Stars</option>
@@ -163,7 +162,7 @@
                     <button type="submit">Submit Review</button>
                 </form>
             </div>
-            <div class="reviews-list">
+            <div class="reviews-list" id="reviews-list">
                 <h2>Customer Reviews</h2>
                 <!-- Example Review -->
                 <div class="review">
@@ -181,5 +180,35 @@
             <p>&copy; 2024 Wayne Power Washing. All rights reserved.</p>
         </footer>
     </div>
+    <script>
+        document.getElementById('review-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var reviewText = document.getElementById('review-text').value;
+            var reviewRating = document.getElementById('review-rating').value;
+
+            if (reviewText && reviewRating) {
+                var reviewsList = document.getElementById('reviews-list');
+
+                var reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review';
+
+                var reviewTitle = document.createElement('h3');
+                reviewTitle.textContent = `Anonymous - ${reviewRating} Stars`;
+
+                var reviewContent = document.createElement('p');
+                reviewContent.textContent = reviewText;
+
+                reviewDiv.appendChild(reviewTitle);
+                reviewDiv.appendChild(reviewContent);
+
+                reviewsList.appendChild(reviewDiv);
+
+                document.getElementById('review-form').reset();
+            } else {
+                alert('Please fill out both the review and rating.');
+            }
+        });
+    </script>
 </body>
 </html>
