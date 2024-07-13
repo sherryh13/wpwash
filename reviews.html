@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/Favicon.jpg">
+    <script src="https://www.gstatic.com/firebasejs/9.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.3.1/firebase-database.js"></script>
     <title>Reviews - Wayne Power Washing</title>
     <style>
         html, body {
@@ -131,6 +133,28 @@
     </style>
 </head>
 <body>
+    <!-- Firebase Modular SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+        // Additional Firebase SDK imports as needed
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBQkQjuJEVI0EJSXXNbWbF2wmwy6IRN9c",
+            authDomain: "wpwashreviews.firebaseapp.com",
+            databaseURL: "https://wpwashreviews-default-rtdb.firebaseio.com",
+            projectId: "wpwashreviews",
+            storageBucket: "wpwashreviews.appspot.com",
+            messagingSenderId: "943574333626",
+            appId: "1:943574333626:web:ace447bc7cb97150232a83",
+            measurementId: "G-MSGFD16KZ9"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
     <div class="container">
         <header>
             <h1>Wayne Power Washing Reviews</h1>
@@ -173,70 +197,86 @@
             <p>&copy; 2024 Wayne Power Washing. All rights reserved.</p>
         </footer>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Function to retrieve reviews from localStorage and display
-            function displayReviews() {
-                var reviewsList = document.getElementById('reviews-list');
+   <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const reviewsList = document.getElementById('reviews-list');
+            const reviewForm = document.getElementById('review-form');
+
+            // Firebase Realtime Database Reference
+            const database = firebase.database();
+            const reviewsRef = database.ref('reviews');
+
+            // Function to fetch reviews from Firebase
+            async function fetchReviews() {
+                try {
+                    reviewsRef.on('value', snapshot => {
+                        const reviews = snapshot.val();
+                        displayReviews(reviews);
+                    });
+                } catch (error) {
+                    console.error('Error fetching reviews:', error.message);
+                }
+            }
+
+            // Function to display reviews
+            function displayReviews(reviews) {
                 reviewsList.innerHTML = ''; // Clear existing content
 
-                var storedReviews = JSON.parse(localStorage.getItem('reviews')) || [];
+                if (reviews) {
+                    Object.values(reviews).forEach(review => {
+                        const reviewDiv = document.createElement('div');
+                        reviewDiv.className = 'review';
 
-                storedReviews.forEach(function(review) {
-                    var reviewDiv = document.createElement('div');
-                    reviewDiv.className = 'review';
+                        const reviewTitle = document.createElement('h3');
+                        reviewTitle.innerHTML = `${review.name} - ${getStars(review.rating)}`;
 
-                    var reviewTitle = document.createElement('h3');
-                    reviewTitle.innerHTML = `${review.name} - ${getStars(review.rating)}`;
+                        const reviewContent = document.createElement('p');
+                        reviewContent.textContent = review.text;
 
-                    var reviewContent = document.createElement('p');
-                    reviewContent.textContent = review.text;
+                        if (review.image) {
+                            const reviewImageElement = document.createElement('img');
+                            reviewImageElement.src = review.image;
+                            reviewImageElement.alt = 'Review Image';
+                            reviewImageElement.className = 'review-image';
+                            reviewDiv.appendChild(reviewImageElement);
+                        }
 
-                    if (review.image) {
-                        var reviewImageElement = document.createElement('img');
-                        reviewImageElement.src = review.image;
-                        reviewImageElement.alt = 'Review Image';
-                        reviewImageElement.className = 'review-image';
-                        reviewDiv.appendChild(reviewImageElement);
-                    }
+                        reviewDiv.appendChild(reviewTitle);
+                        reviewDiv.appendChild(reviewContent);
 
-                    reviewDiv.appendChild(reviewTitle);
-                    reviewDiv.appendChild(reviewContent);
-
-                    reviewsList.appendChild(reviewDiv);
-                });
+                        reviewsList.appendChild(reviewDiv);
+                    });
+                }
             }
 
             // Event listener for form submission
-            document.getElementById('review-form').addEventListener('submit', function(event) {
+            reviewForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
 
-                var reviewName = document.getElementById('review-name').value;
-                var reviewText = document.getElementById('review-text').value;
-                var reviewRating = document.getElementById('review-rating').value;
-                var reviewImage = document.getElementById('review-image').files[0];
+                const reviewName = document.getElementById('review-name').value;
+                const reviewText = document.getElementById('review-text').value;
+                const reviewRating = document.getElementById('review-rating').value;
+                const reviewImage = document.getElementById('review-image').files[0];
 
                 if (reviewName && reviewText && reviewRating) {
-                    var storedReviews = JSON.parse(localStorage.getItem('reviews')) || [];
-
-                    // Create a new review object
-                    var newReview = {
+                    let newReviewData = {
                         name: reviewName,
                         text: reviewText,
-                        rating: reviewRating,
-                        image: reviewImage ? window.URL.createObjectURL(reviewImage) : null
+                        rating: reviewRating
                     };
 
-                    // Add the new review to the stored reviews array
-                    storedReviews.push(newReview);
+                    if (reviewImage) {
+                        // Upload image to Firebase Storage (optional, if needed)
+                        const storageRef = firebase.storage().ref();
+                        const imageRef = storageRef.child(`reviewImages/${reviewImage.name}`);
+                        await imageRef.put(reviewImage);
+                        newReviewData.image = await imageRef.getDownloadURL();
+                    }
 
-                    // Save updated reviews back to localStorage
-                    localStorage.setItem('reviews', JSON.stringify(storedReviews));
+                    // Push new review data to Firebase Realtime Database
+                    reviewsRef.push(newReviewData);
 
-                    // Display all reviews including the new one
-                    displayReviews();
-
-                    document.getElementById('review-form').reset();
+                    reviewForm.reset();
                 } else {
                     alert('Please fill out your name, review, and rating.');
                 }
@@ -244,15 +284,15 @@
 
             // Function to convert rating to stars
             function getStars(rating) {
-                var stars = '';
-                for (var i = 0; i < rating; i++) {
+                let stars = '';
+                for (let i = 0; i < rating; i++) {
                     stars += '⭐';
                 }
                 return stars;
             }
 
-            // Initial display of reviews on page load
-            displayReviews();
+            // Initial fetch and display of reviews on page load
+            fetchReviews();
         });
     </script>
 </body>
