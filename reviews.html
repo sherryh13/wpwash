@@ -134,27 +134,6 @@
 </head>
 <body>
     <!-- Firebase Modular SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
-        // Additional Firebase SDK imports as needed
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBBQkQjuJEVI0EJSXXNbWbF2wmwy6IRN9c",
-            authDomain: "wpwashreviews.firebaseapp.com",
-            databaseURL: "https://wpwashreviews-default-rtdb.firebaseio.com",
-            projectId: "wpwashreviews",
-            storageBucket: "wpwashreviews.appspot.com",
-            messagingSenderId: "943574333626",
-            appId: "1:943574333626:web:ace447bc7cb97150232a83",
-            measurementId: "G-MSGFD16KZ9"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-    </script>
     <div class="container">
         <header>
             <h1>Wayne Power Washing Reviews</h1>
@@ -198,32 +177,52 @@
         </footer>
     </div>
    <script>
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const reviewsList = document.getElementById('reviews-list');
             const reviewForm = document.getElementById('review-form');
 
-            // Firebase Realtime Database Reference
-            const database = firebase.database();
-            const reviewsRef = database.ref('reviews');
+            // Open (or create) the database
+            const request = window.indexedDB.open('reviewsDB', 1);
 
-            // Function to fetch reviews from Firebase
-            async function fetchReviews() {
-                try {
-                    reviewsRef.on('value', snapshot => {
-                        const reviews = snapshot.val();
-                        displayReviews(reviews);
-                    });
-                } catch (error) {
-                    console.error('Error fetching reviews:', error.message);
-                }
+            request.onerror = function(event) {
+                console.error('Database error:', event.target.errorCode);
+            };
+
+            // Create the object store
+            request.onupgradeneeded = function(event) {
+                const db = event.target.result;
+                const objectStore = db.createObjectStore('reviews', { keyPath: 'id', autoIncrement:true });
+                objectStore.createIndex('name', 'name', { unique: false });
+                objectStore.createIndex('rating', 'rating', { unique: false });
+                objectStore.createIndex('text', 'text', { unique: false });
+                objectStore.createIndex('image', 'image', { unique: false });
+            };
+
+            // Function to save review to IndexedDB
+            function saveReview(review) {
+                const transaction = db.transaction(['reviews'], 'readwrite');
+                const objectStore = transaction.objectStore('reviews');
+                const request = objectStore.add(review);
+                request.onsuccess = function(event) {
+                    console.log('Review saved successfully.');
+                    displayReviews();
+                };
+                request.onerror = function(event) {
+                    console.error('Error saving review:', event.target.error);
+                };
             }
 
-            // Function to display reviews
-            function displayReviews(reviews) {
+            // Function to display reviews from IndexedDB
+            function displayReviews() {
                 reviewsList.innerHTML = ''; // Clear existing content
 
-                if (reviews) {
-                    Object.values(reviews).forEach(review => {
+                const transaction = db.transaction(['reviews'], 'readonly');
+                const objectStore = transaction.objectStore('reviews');
+                const request = objectStore.getAll();
+
+                request.onsuccess = function(event) {
+                    const reviews = event.target.result;
+                    reviews.forEach(review => {
                         const reviewDiv = document.createElement('div');
                         reviewDiv.className = 'review';
 
@@ -246,11 +245,11 @@
 
                         reviewsList.appendChild(reviewDiv);
                     });
-                }
+                };
             }
 
             // Event listener for form submission
-            reviewForm.addEventListener('submit', async function(event) {
+            reviewForm.addEventListener('submit', function(event) {
                 event.preventDefault();
 
                 const reviewName = document.getElementById('review-name').value;
@@ -266,16 +265,14 @@
                     };
 
                     if (reviewImage) {
-                        // Upload image to Firebase Storage (optional, if needed)
-                        const storageRef = firebase.storage().ref();
-                        const imageRef = storageRef.child(`reviewImages/${reviewImage.name}`);
-                        await imageRef.put(reviewImage);
-                        newReviewData.image = await imageRef.getDownloadURL();
+                        // Handle image upload (if needed)
+                        // For simplicity, this example does not handle image upload to IndexedDB
                     }
 
-                    // Push new review data to Firebase Realtime Database
-                    reviewsRef.push(newReviewData);
+                    // Save review to IndexedDB
+                    saveReview(newReviewData);
 
+                    // Clear form fields
                     reviewForm.reset();
                 } else {
                     alert('Please fill out your name, review, and rating.');
@@ -291,8 +288,8 @@
                 return stars;
             }
 
-            // Initial fetch and display of reviews on page load
-            fetchReviews();
+            // Initial display of reviews on page load
+            displayReviews();
         });
     </script>
 </body>
