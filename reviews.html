@@ -174,49 +174,84 @@
         </footer>
     </div>
     <script>
-        document.getElementById('review-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            var reviewName = document.getElementById('review-name').value;
-            var reviewText = document.getElementById('review-text').value;
-            var reviewRating = document.getElementById('review-rating').value;
-            var reviewImage = document.getElementById('review-image').files[0];
-
-            if (reviewName && reviewText && reviewRating && reviewImage) {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to retrieve reviews from localStorage and display
+            function displayReviews() {
                 var reviewsList = document.getElementById('reviews-list');
-
-                var reviewDiv = document.createElement('div');
-                reviewDiv.className = 'review';
-
-                var reviewTitle = document.createElement('h3');
-                reviewTitle.innerHTML = `${reviewName} - ${getStars(reviewRating)}`;
-
-                var reviewContent = document.createElement('p');
-                reviewContent.textContent = reviewText;
-
-                var reviewImageElement = document.createElement('img');
-                reviewImageElement.src = window.URL.createObjectURL(reviewImage);
-                reviewImageElement.alt = 'Review Image';
-
-                reviewDiv.appendChild(reviewTitle);
-                reviewDiv.appendChild(reviewContent);
-                reviewDiv.appendChild(reviewImageElement);
-
-                reviewsList.appendChild(reviewDiv);
-
-                document.getElementById('review-form').reset();
-            } else {
-                alert('Please fill out your name, review, rating, and attach an image.');
+                reviewsList.innerHTML = ''; // Clear existing content
+    
+                var storedReviews = JSON.parse(localStorage.getItem('reviews')) || [];
+    
+                storedReviews.forEach(function(review) {
+                    var reviewDiv = document.createElement('div');
+                    reviewDiv.className = 'review';
+    
+                    var reviewTitle = document.createElement('h3');
+                    reviewTitle.innerHTML = `${review.name} - ${getStars(review.rating)}`;
+    
+                    var reviewContent = document.createElement('p');
+                    reviewContent.textContent = review.text;
+    
+                    var reviewImageElement = document.createElement('img');
+                    reviewImageElement.src = review.image;
+                    reviewImageElement.alt = 'Review Image';
+    
+                    reviewDiv.appendChild(reviewTitle);
+                    reviewDiv.appendChild(reviewContent);
+                    reviewDiv.appendChild(reviewImageElement);
+    
+                    reviewsList.appendChild(reviewDiv);
+                });
             }
+    
+            // Event listener for form submission
+            document.getElementById('review-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+    
+                var reviewName = document.getElementById('review-name').value;
+                var reviewText = document.getElementById('review-text').value;
+                var reviewRating = document.getElementById('review-rating').value;
+                var reviewImage = document.getElementById('review-image').files[0];
+    
+                if (reviewName && reviewText && reviewRating && reviewImage) {
+                    var storedReviews = JSON.parse(localStorage.getItem('reviews')) || [];
+    
+                    // Create a new review object
+                    var newReview = {
+                        name: reviewName,
+                        text: reviewText,
+                        rating: reviewRating,
+                        image: window.URL.createObjectURL(reviewImage)
+                    };
+    
+                    // Add the new review to the stored reviews array
+                    storedReviews.push(newReview);
+    
+                    // Save updated reviews back to localStorage
+                    localStorage.setItem('reviews', JSON.stringify(storedReviews));
+    
+                    // Display all reviews including the new one
+                    displayReviews();
+    
+                    document.getElementById('review-form').reset();
+                } else {
+                    alert('Please fill out your name, review, rating, and attach an image.');
+                }
+            });
+    
+            // Function to convert rating to stars
+            function getStars(rating) {
+                var stars = '';
+                for (var i = 0; i < rating; i++) {
+                    stars += '⭐';
+                }
+                return stars;
+            }
+    
+            // Initial display of reviews on page load
+            displayReviews();
         });
+</script>
 
-        function getStars(rating) {
-            var stars = '';
-            for (var i = 0; i < rating; i++) {
-                stars += '⭐';
-            }
-            return stars;
-        }
-    </script>
 </body>
 </html>
