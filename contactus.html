@@ -2,11 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="keywords" content="wayne power washing NJ Servicing Northern New Jersey Bergen Passaic Morris County hot water power washing NJ, powerwashing services, wayne 07470, pompon plains 07444, kinnelon 07405, franklin lakes 07417, pequannock 07440, river dale 07457, oakland 07436, blooming dale 07403, pompton lakes 07442, butler 07405, pine brook 07058, west paterson 07424, north haledon 07508 07538 07508, haskell 07420, lincoln park 07035, little falls 07424, montville 07045, ringwood 07456, totowa 07511 07512,07082 07465, towaco 07082, wanaque 07456, House Washing, Roof Cleaning, Deck Restoration, concrete cleaning nj power washing services gutter houses siding roof decks concrete pricing Paver Brick Sand Sanding">
-    <meta name="description" content="Since 1977, Wayne Power Washing has provided professional detailed powerwashing services for Northern New Jersey homeowners including your house, siding, roof, gutter cleaning, deck, and concrete.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/Favicon.jpg">
-    <title>Wayne Power Washing</title>
+    <title>Reviews - Wayne Power Washing</title>
     <style>
         html, body {
             width: 100%;
@@ -63,52 +60,46 @@
         footer p {
             margin: 0;
         }
-        .welcome {
+        .review-section {
+            margin-top: 40px;
+        }
+        .review-section h2 {
             text-align: center;
             font-size: 24px;
-            font-weight: bold;
             color: #000000;
         }
-        .description {
+        .review-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .review-form textarea {
+            width: 80%;
+            height: 100px;
+            padding: 10px;
             font-size: 16px;
-            color: #000000;
-            text-align: justify;
-        }
-        .description strong {
-            display: block;
             margin-bottom: 10px;
         }
-        .certifications {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .certifications img {
-            margin: 0 20px;
-        }
-        .service-area {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        .service-area th, .service-area td {
+        .review-form select, .review-form button {
             padding: 10px;
-            border: 1px solid #000000;
-        }
-        .service-area th {
-            background-color: #000000;
-            color: #fff;
-            font-weight: bold;
-        }
-        .service-area td {
-            color: #000000;
-            font-weight: bold;
-        }
-        .footer-info {
-            text-align: center;
             font-size: 16px;
-            color: #000000;
-            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .reviews-list {
             margin-top: 20px;
+        }
+        .review {
+            border: 1px solid #000000;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .review h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .review p {
+            margin: 5px 0;
         }
         @media (max-width: 768px) {
             header h1 {
@@ -118,23 +109,9 @@
                 margin: 0 5px;
                 font-size: 14px;
             }
-            .welcome {
-                font-size: 20px;
-            }
-            .description {
-                font-size: 14px;
-            }
-            .certifications img {
-                margin: 10px;
-                width: 80px;
-                height: auto;
-            }
-            .service-area th, .service-area td {
-                padding: 5px;
-                font-size: 12px;
-            }
-            .footer-info {
-                font-size: 14px;
+            .review-form textarea {
+                width: 90%;
+                height: 80px;
             }
         }
         @media (max-width: 480px) {
@@ -145,23 +122,9 @@
                 margin: 0 2px;
                 font-size: 12px;
             }
-            .welcome {
-                font-size: 18px;
-            }
-            .description {
-                font-size: 12px;
-            }
-            .certifications img {
-                margin: 5px;
-                width: 60px;
-                height: auto;
-            }
-            .service-area th, .service-area td {
-                padding: 3px;
-                font-size: 10px;
-            }
-            .footer-info {
-                font-size: 12px;
+            .review-form textarea {
+                width: 95%;
+                height: 60px;
             }
         }
     </style>
@@ -169,7 +132,7 @@
 <body>
     <div class="container">
         <header>
-            <h1><u>Welcome to Wayne Power Washing</u></h1>
+            <h1>Wayne Power Washing Reviews</h1>
             <nav>
                 <a href="index.html">Home</a>
                 <a href="housewashing.html">House Washing</a>
@@ -181,10 +144,38 @@
                 <a href="guttercleaning.html">Gutter Cleaning</a>
                 <a href="paversealing.html">Paver Sealing</a>
                 <a href="contactus.html">Contact Us</a>
+                <a href="reviews.html">Reviews</a>
             </nav>
         </header>
         <main>
-            <!-- Your main content goes here -->
+            <div class="review-section">
+                <h2>Leave a Review</h2>
+                <form class="review-form">
+                    <textarea placeholder="Write your review here..."></textarea>
+                    <select>
+                        <option value="" disabled selected>Rate us</option>
+                        <option value="1">1 Star</option>
+                        <option value="2">2 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="5">5 Stars</option>
+                    </select>
+                    <button type="submit">Submit Review</button>
+                </form>
+            </div>
+            <div class="reviews-list">
+                <h2>Customer Reviews</h2>
+                <!-- Example Review -->
+                <div class="review">
+                    <h3>John Doe - 5 Stars</h3>
+                    <p>Excellent service! Highly recommended.</p>
+                </div>
+                <div class="review">
+                    <h3>Jane Smith - 4 Stars</h3>
+                    <p>Great job, but could improve on timing.</p>
+                </div>
+                <!-- Add more reviews here -->
+            </div>
         </main>
         <footer>
             <p>&copy; 2024 Wayne Power Washing. All rights reserved.</p>
