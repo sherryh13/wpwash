@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/Favicon.jpg">
-    <script src="https://www.gstatic.com/firebasejs/9.3.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.3.1/firebase-database.js"></script>
     <title>Reviews - Wayne Power Washing</title>
     <style>
         html, body {
@@ -177,122 +175,77 @@
         </footer>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Function to handle form submission
+        function submitReview() {
+            const name = document.getElementById('review-name').value.trim();
+            const text = document.getElementById('review-text').value.trim();
+            const rating = document.getElementById('review-rating').value;
+
+            if (name && text && rating) {
+                const review = {
+                    id: Date.now(), // Unique ID (timestamp)
+                    name: name,
+                    text: text,
+                    rating: rating
+                };
+
+                // Save review to local storage
+                saveReview(review);
+
+                // Clear form fields
+                document.getElementById('review-name').value = '';
+                document.getElementById('review-text').value = '';
+                document.getElementById('review-rating').value = '';
+
+                // Refresh reviews list
+                displayReviews();
+            } else {
+                alert('Please fill out your name, review, and rating.');
+            }
+        }
+
+        // Function to save review to local storage
+        function saveReview(review) {
+            let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            reviews.push(review);
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+        }
+
+        // Function to display reviews from local storage
+        function displayReviews() {
             const reviewsList = document.getElementById('reviews-list');
-            const reviewForm = document.getElementById('review-form');
+            reviewsList.innerHTML = ''; // Clear existing content
 
-            let db;
+            let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
 
-            // Open (or create) the database
-            const request = window.indexedDB.open('reviewsDB', 1);
+            reviews.forEach(review => {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review';
 
-            request.onerror = function(event) {
-                console.error('Database error:', event.target.errorCode);
-            };
+                const reviewTitle = document.createElement('h3');
+                reviewTitle.innerHTML = `${review.name} - ${getStars(review.rating)}`;
 
-            // Create or upgrade the database schema
-            request.onupgradeneeded = function(event) {
-                db = event.target.result;
-                const objectStore = db.createObjectStore('reviews', { keyPath: 'id', autoIncrement: true });
-                objectStore.createIndex('name', 'name', { unique: false });
-                objectStore.createIndex('rating', 'rating', { unique: false });
-                objectStore.createIndex('text', 'text', { unique: false });
-                objectStore.createIndex('image', 'image', { unique: false });
-            };
+                const reviewContent = document.createElement('p');
+                reviewContent.textContent = review.text;
 
-            // Function to save review to IndexedDB
-            function saveReview(review) {
-                const transaction = db.transaction(['reviews'], 'readwrite');
-                const objectStore = transaction.objectStore('reviews');
-                const request = objectStore.add(review);
-                request.onsuccess = function(event) {
-                    console.log('Review saved successfully.');
-                    displayReviews();
-                };
-                request.onerror = function(event) {
-                    console.error('Error saving review:', event.target.error);
-                };
-            }
+                reviewDiv.appendChild(reviewTitle);
+                reviewDiv.appendChild(reviewContent);
 
-            // Function to display reviews from IndexedDB
-            function displayReviews() {
-                reviewsList.innerHTML = ''; // Clear existing content
-
-                const transaction = db.transaction(['reviews'], 'readonly');
-                const objectStore = transaction.objectStore('reviews');
-                const request = objectStore.getAll();
-
-                request.onsuccess = function(event) {
-                    const reviews = event.target.result;
-                    reviews.forEach(review => {
-                        const reviewDiv = document.createElement('div');
-                        reviewDiv.className = 'review';
-
-                        const reviewTitle = document.createElement('h3');
-                        reviewTitle.innerHTML = `${review.name} - ${getStars(review.rating)}`;
-
-                        const reviewContent = document.createElement('p');
-                        reviewContent.textContent = review.text;
-
-                        if (review.image) {
-                            const reviewImageElement = document.createElement('img');
-                            reviewImageElement.src = review.image;
-                            reviewImageElement.alt = 'Review Image';
-                            reviewImageElement.className = 'review-image';
-                            reviewDiv.appendChild(reviewImageElement);
-                        }
-
-                        reviewDiv.appendChild(reviewTitle);
-                        reviewDiv.appendChild(reviewContent);
-
-                        reviewsList.appendChild(reviewDiv);
-                    });
-                };
-            }
-
-            // Event listener for form submission
-            reviewForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                const reviewName = document.getElementById('review-name').value;
-                const reviewText = document.getElementById('review-text').value;
-                const reviewRating = document.getElementById('review-rating').value;
-                const reviewImage = document.getElementById('review-image').files[0];
-
-                if (reviewName && reviewText && reviewRating) {
-                    let newReviewData = {
-                        name: reviewName,
-                        text: reviewText,
-                        rating: reviewRating
-                    };
-
-                    if (reviewImage) {
-                        // Handle image upload if needed
-                        // For simplicity, this example does not handle image upload to IndexedDB
-                    }
-
-                    // Save review to IndexedDB
-                    saveReview(newReviewData);
-
-                    // Clear form fields
-                    reviewForm.reset();
-                } else {
-                    alert('Please fill out your name, review, and rate');
-                }
+                reviewsList.appendChild(reviewDiv);
             });
+        }
 
-            // Function to convert rating to stars
-            function getStars(rating) {
-                let stars = '';
-                for (let i = 0; i < rating; i++) {
-                    stars += '⭐';
-                }
-                return stars;
+        // Function to convert rating to stars
+        function getStars(rating) {
+            let stars = '';
+            for (let i = 0; i < rating; i++) {
+                stars += '⭐';
             }
+            return stars;
+        }
 
-            // Initial display of reviews on page load
-            displayReviews();
-        });
+        // Initial display of reviews on page load
+        displayReviews();
     </script>
 </body>
 </html>
