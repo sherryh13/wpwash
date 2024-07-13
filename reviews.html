@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/Favicon.jpg">
     <title>Reviews - Wayne Power Washing</title>
     <style>
         html, body {
@@ -81,6 +80,9 @@
             margin-bottom: 10px;
             width: 80%;
         }
+        .review-form input[type=file] {
+            margin-top: 10px;
+        }
         .reviews-list {
             margin-top: 20px;
         }
@@ -95,6 +97,10 @@
         }
         .review p {
             margin: 5px 0;
+        }
+        .review img {
+            max-width: 100%;
+            margin-top: 10px;
         }
         @media (max-width: 768px) {
             header h1 {
@@ -136,7 +142,6 @@
                 <a href="sandjoints.html">Paver Brick Sand</a>
                 <a href="guttercleaning.html">Gutter Cleaning</a>
                 <a href="paversealing.html">Paver Sealing</a>
-                <a href="contactus.html">Contact Us</a>
                 <a href="reviews.html">Reviews</a>
             </nav>
         </header>
@@ -154,6 +159,7 @@
                         <option value="4">⭐⭐⭐⭐</option>
                         <option value="5">⭐⭐⭐⭐⭐</option>
                     </select>
+                    <input type="file" id="review-image" accept="image/*">
                     <button type="submit">Submit Review</button>
                 </form>
             </div>
@@ -163,10 +169,12 @@
                 <div class="review">
                     <h3>John Doe - ⭐⭐⭐⭐⭐</h3>
                     <p>Excellent service! Highly recommended.</p>
+                    <img src="https://via.placeholder.com/150" alt="Review Image">
                 </div>
                 <div class="review">
                     <h3>Jane Smith - ⭐⭐⭐⭐</h3>
                     <p>Great job, but could improve on timing.</p>
+                    <img src="https://via.placeholder.com/150" alt="Review Image">
                 </div>
                 <!-- Add more reviews here -->
             </div>
@@ -182,8 +190,9 @@
             var reviewName = document.getElementById('review-name').value;
             var reviewText = document.getElementById('review-text').value;
             var reviewRating = document.getElementById('review-rating').value;
+            var reviewImage = document.getElementById('review-image').files[0];
 
-            if (reviewName && reviewText && reviewRating) {
+            if (reviewName && reviewText && reviewRating && reviewImage) {
                 var reviewsList = document.getElementById('reviews-list');
 
                 var reviewDiv = document.createElement('div');
@@ -195,14 +204,19 @@
                 var reviewContent = document.createElement('p');
                 reviewContent.textContent = reviewText;
 
+                var reviewImageElement = document.createElement('img');
+                reviewImageElement.src = window.URL.createObjectURL(reviewImage);
+                reviewImageElement.alt = 'Review Image';
+
                 reviewDiv.appendChild(reviewTitle);
                 reviewDiv.appendChild(reviewContent);
+                reviewDiv.appendChild(reviewImageElement);
 
                 reviewsList.appendChild(reviewDiv);
 
                 document.getElementById('review-form').reset();
             } else {
-                alert('Please fill out your name, review, and rating.');
+                alert('Please fill out your name, review, rating, and attach an image.');
             }
         });
 
