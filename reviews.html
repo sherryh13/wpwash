@@ -74,17 +74,11 @@
             align-items: center;
             margin-top: 20px;
         }
-        .review-form textarea {
+        .review-form input, .review-form textarea, .review-form select, .review-form button {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
             width: 80%;
-            height: 100px;
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        .review-form select, .review-form button {
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 10px;
         }
         .reviews-list {
             margin-top: 20px;
@@ -109,9 +103,8 @@
                 margin: 0 5px;
                 font-size: 14px;
             }
-            .review-form textarea {
+            .review-form input, .review-form textarea {
                 width: 90%;
-                height: 80px;
             }
         }
         @media (max-width: 480px) {
@@ -122,9 +115,8 @@
                 margin: 0 2px;
                 font-size: 12px;
             }
-            .review-form textarea {
+            .review-form input, .review-form textarea {
                 width: 95%;
-                height: 60px;
             }
         }
     </style>
@@ -150,14 +142,15 @@
             <div class="review-section">
                 <h2>Leave a Review</h2>
                 <form class="review-form" id="review-form">
+                    <input type="text" id="review-name" placeholder="Your name">
                     <textarea id="review-text" placeholder="Write your review here..."></textarea>
                     <select id="review-rating">
                         <option value="" disabled selected>Rate us</option>
-                        <option value="1">1 Star</option>
-                        <option value="2">2 Stars</option>
-                        <option value="3">3 Stars</option>
-                        <option value="4">4 Stars</option>
-                        <option value="5">5 Stars</option>
+                        <option value="1">⭐</option>
+                        <option value="2">⭐⭐</option>
+                        <option value="3">⭐⭐⭐</option>
+                        <option value="4">⭐⭐⭐⭐</option>
+                        <option value="5">⭐⭐⭐⭐⭐</option>
                     </select>
                     <button type="submit">Submit Review</button>
                 </form>
@@ -166,11 +159,11 @@
                 <h2>Customer Reviews</h2>
                 <!-- Example Review -->
                 <div class="review">
-                    <h3>John Doe - 5 Stars</h3>
+                    <h3>John Doe - ⭐⭐⭐⭐⭐</h3>
                     <p>Excellent service! Highly recommended.</p>
                 </div>
                 <div class="review">
-                    <h3>Jane Smith - 4 Stars</h3>
+                    <h3>Jane Smith - ⭐⭐⭐⭐</h3>
                     <p>Great job, but could improve on timing.</p>
                 </div>
                 <!-- Add more reviews here -->
@@ -184,17 +177,18 @@
         document.getElementById('review-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
+            var reviewName = document.getElementById('review-name').value;
             var reviewText = document.getElementById('review-text').value;
             var reviewRating = document.getElementById('review-rating').value;
 
-            if (reviewText && reviewRating) {
+            if (reviewName && reviewText && reviewRating) {
                 var reviewsList = document.getElementById('reviews-list');
 
                 var reviewDiv = document.createElement('div');
                 reviewDiv.className = 'review';
 
                 var reviewTitle = document.createElement('h3');
-                reviewTitle.textContent = `Anonymous - ${reviewRating} Stars`;
+                reviewTitle.textContent = `${reviewName} - ${reviewRating}`;
 
                 var reviewContent = document.createElement('p');
                 reviewContent.textContent = reviewText;
@@ -206,7 +200,7 @@
 
                 document.getElementById('review-form').reset();
             } else {
-                alert('Please fill out both the review and rating.');
+                alert('Please fill out your name, review, and rating.');
             }
         });
     </script>
