@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/Favicon.jpg">
     <title>Reviews - Wayne Power Washing</title>
     <style>
         html, body {
@@ -135,6 +136,7 @@
                 <a href="sandjoints.html">Paver Brick Sand</a>
                 <a href="guttercleaning.html">Gutter Cleaning</a>
                 <a href="paversealing.html">Paver Sealing</a>
+                <a href="contactus.html">Contact Us</a>
                 <a href="reviews.html">Reviews</a>
             </nav>
         </header>
@@ -188,7 +190,7 @@
                 reviewDiv.className = 'review';
 
                 var reviewTitle = document.createElement('h3');
-                reviewTitle.textContent = `${reviewName} - ${reviewRating}`;
+                reviewTitle.innerHTML = `${reviewName} - ${getStars(reviewRating)}`;
 
                 var reviewContent = document.createElement('p');
                 reviewContent.textContent = reviewText;
@@ -203,6 +205,14 @@
                 alert('Please fill out your name, review, and rating.');
             }
         });
+
+        function getStars(rating) {
+            var stars = '';
+            for (var i = 0; i < rating; i++) {
+                stars += '⭐';
+            }
+            return stars;
+        }
     </script>
 </body>
 </html>
